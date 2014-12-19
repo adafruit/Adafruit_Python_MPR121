@@ -16,7 +16,7 @@
 #   sudo pip install python-uinput
 #
 # Also make sure you have installed the Adafruit Python MPR121 library by running
-# its setup.py:
+# its setup.py (in the parent directory):
 #   sudo python setup.py install
 #
 # Usage
@@ -25,10 +25,10 @@
 # To use this program you first need to connect the MPR121 board to the Raspberry
 # Pi (either connect the HAT directly to the Pi, or wire the I2C pins SCL, SDA to
 # the Pi SCL, SDA, VIN to Pi 3.3V, GND to Pi GND).  If you aren't using the HAT
-# versin of the board you must connect the IRQ pin to a free digital input on the
+# version of the board you must connect the IRQ pin to a free digital input on the
 # Pi (the default is 26).
 #
-# Next define the mapping of capacitive touch input put presses to keyboard
+# Next define the mapping of capacitive touch input presses to keyboard
 # button presses.  Scroll down to the KEY_MAPPING dictionary definition below
 # and adjust the configuration as described in its comments.
 #
