@@ -9,6 +9,6 @@ setup(name              = 'Adafruit_MPR121',
       description       = 'Library for MPR121 capacitive touch sensor.',
       license           = 'MIT',
       url               = 'https://github.com/adafruit/Adafruit_Python_MPR121/',
-      dependency_links  = ['https://github.com/adafruit/Adafruit_Python_GPIO/tarball/master#egg=Adafruit-GPIO-0.6.5'],
-      install_requires  = ['Adafruit-GPIO>=0.6.5'],
+      dependency_links  = ['https://github.com/adafruit/Adafruit_Python_GPIO/tarball/master#egg=Adafruit-GPIO-0.7'],
+      install_requires  = ['Adafruit-GPIO>=0.7'],
       packages          = find_packages())

@@ -77,11 +77,15 @@ class MPR121(object):
 
         Returns True if communication with the MPR121 was established, otherwise
         returns False.
-        """
+        """        
         # Assume we're using platform's default I2C bus if none is specified.
         if i2c is None:
             import Adafruit_GPIO.I2C as I2C
             i2c = I2C
+            # Require repeated start conditions for I2C register reads.  Unfortunately
+            # the MPR121 is very sensitive and requires repeated starts to read all
+            # the registers.
+            I2C.require_repeated_start()
         # Save a reference to the I2C device instance for later communication.
         self._device = i2c.get_i2c_device(address, **kwargs)
         # Soft reset of device.
@@ -90,14 +94,9 @@ class MPR121(object):
         # Set electrode configuration to default values.
         self._device.write8(MPR121_ECR, 0x00)
         # Check CDT, SFI, ESI configuration is at default values.
-        # NOTE: This is commented out for now because it _requires_ a repeated 
-        # I2C start condition to read the register and the Pi doesn't easily
-        # support that reading mode.  There's more info in this thread (and a
-        # workaround to enable the mode), but for now this check isn't critical.
-        #   http://www.raspberrypi.org/forums/viewtopic.php?f=44&t=15840
-        #c = self._device.readU8(MPR121_CONFIG2)
-        #if c != 0x24:
-        #   return False
+        c = self._device.readU8(MPR121_CONFIG2)
+        if c != 0x24:
+           return False
         # Set threshold for touch and release to default values.
         self.set_thresholds(12, 6)
         # Configure baseline filtering control registers.

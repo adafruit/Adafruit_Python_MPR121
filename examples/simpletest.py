@@ -70,8 +70,6 @@ while True:
     
     # If you're curious or want to see debug info for each pin, uncomment the
     # following lines:
-    # NOTE: Right now these aren't reliably read because of a repeated I2C start
-    # condition quirk.
     #print '\t\t\t\t\t\t\t\t\t\t\t\t\t 0x{0:0X}'.format(cap.touched())
     #filtered = [cap.filtered_data(i) for i in range(12)]
     #print 'Filt:', '\t'.join(map(str, filtered))
