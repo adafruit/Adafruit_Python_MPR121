@@ -3,7 +3,7 @@ use_setuptools()
 from setuptools import setup, find_packages
 
 setup(name              = 'Adafruit_MPR121',
-      version           = '1.0.0',
+      version           = '1.1.0',
       author            = 'Tony DiCola',
       author_email      = 'tdicola@adafruit.com',
       description       = 'Library for MPR121 capacitive touch sensor.',

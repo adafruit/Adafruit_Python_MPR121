@@ -59,6 +59,8 @@ MPR121_GPIOCLR         = 0x79
 MPR121_GPIOTOGGLE      = 0x7A
 MPR121_SOFTRESET       = 0x80
 
+MAX_I2C_RETRIES = 5
+
 
 class MPR121(object):
     """Representation of a MPR121 capacitive touch sensor."""
@@ -88,37 +90,60 @@ class MPR121(object):
             I2C.require_repeated_start()
         # Save a reference to the I2C device instance for later communication.
         self._device = i2c.get_i2c_device(address, **kwargs)
+        return self._reset()
+
+    def _reset(self):
         # Soft reset of device.
-        self._device.write8(MPR121_SOFTRESET, 0x63)
+        self._i2c_retry(self._device.write8, MPR121_SOFTRESET, 0x63)
         time.sleep(0.001) # This 1ms delay here probably isn't necessary but can't hurt.
         # Set electrode configuration to default values.
-        self._device.write8(MPR121_ECR, 0x00)
+        self._i2c_retry(self._device.write8, MPR121_ECR, 0x00)
         # Check CDT, SFI, ESI configuration is at default values.
-        c = self._device.readU8(MPR121_CONFIG2)
+        c = self._i2c_retry(self._device.readU8, MPR121_CONFIG2)
         if c != 0x24:
            return False
         # Set threshold for touch and release to default values.
         self.set_thresholds(12, 6)
         # Configure baseline filtering control registers.
-        self._device.write8(MPR121_MHDR, 0x01)
-        self._device.write8(MPR121_NHDR, 0x01)
-        self._device.write8(MPR121_NCLR, 0x0E)
-        self._device.write8(MPR121_FDLR, 0x00)
-        self._device.write8(MPR121_MHDF, 0x01)
-        self._device.write8(MPR121_NHDF, 0x05)
-        self._device.write8(MPR121_NCLF, 0x01)
-        self._device.write8(MPR121_FDLF, 0x00)
-        self._device.write8(MPR121_NHDT, 0x00)
-        self._device.write8(MPR121_NCLT, 0x00)
-        self._device.write8(MPR121_FDLT, 0x00)
+        self._i2c_retry(self._device.write8, MPR121_MHDR, 0x01)
+        self._i2c_retry(self._device.write8, MPR121_NHDR, 0x01)
+        self._i2c_retry(self._device.write8, MPR121_NCLR, 0x0E)
+        self._i2c_retry(self._device.write8, MPR121_FDLR, 0x00)
+        self._i2c_retry(self._device.write8, MPR121_MHDF, 0x01)
+        self._i2c_retry(self._device.write8, MPR121_NHDF, 0x05)
+        self._i2c_retry(self._device.write8, MPR121_NCLF, 0x01)
+        self._i2c_retry(self._device.write8, MPR121_FDLF, 0x00)
+        self._i2c_retry(self._device.write8, MPR121_NHDT, 0x00)
+        self._i2c_retry(self._device.write8, MPR121_NCLT, 0x00)
+        self._i2c_retry(self._device.write8, MPR121_FDLT, 0x00)
         # Set other configuration registers.
-        self._device.write8(MPR121_DEBOUNCE, 0)
-        self._device.write8(MPR121_CONFIG1, 0x10) # default, 16uA charge current
-        self._device.write8(MPR121_CONFIG2, 0x20) # 0.5uS encoding, 1ms period
+        self._i2c_retry(self._device.write8, MPR121_DEBOUNCE, 0)
+        self._i2c_retry(self._device.write8, MPR121_CONFIG1, 0x10) # default, 16uA charge current
+        self._i2c_retry(self._device.write8, MPR121_CONFIG2, 0x20) # 0.5uS encoding, 1ms period
         # Enable all electrodes.
-        self._device.write8(MPR121_ECR, 0x8F) # start with first 5 bits of baseline tracking
+        self._i2c_retry(self._device.write8, MPR121_ECR, 0x8F) # start with first 5 bits of baseline tracking
         # All done, everything succeeded!
         return True
+
+    def _i2c_retry(self, func, *params):
+        # Run specified I2C request and ignore IOError 110 (timeout) up to
+        # retries times.  For some reason the Pi 2 hardware I2C appears to be
+        # flakey and randomly return timeout errors on I2C reads.  This will
+        # catch those errors, reset the MPR121, and retry.
+        count = 0
+        while True:
+            try:
+                return func(*params)
+            except IOError as ex:
+                # Re-throw anything that isn't a timeout (110) error.
+                if ex.errno != 110:
+                    raise ex
+            # Else there was a timeout, so reset the device and retry.
+            self._reset()
+            # Increase count and fail after maximum number of retries.
+            count += 1
+            if count >= MAX_I2C_RETRIES:
+                raise RuntimeError('Exceeded maximum number or retries attempting I2C communication!')
 
     def set_thresholds(self, touch, release):
         """Set the touch and release threshold for all inputs to the provided
@@ -129,29 +154,29 @@ class MPR121(object):
         assert release >= 0 and release <= 255, 'release must be between 0-255 (inclusive)'
         # Set the touch and release register value for all the inputs.
         for i in range(12):
-            self._device.write8(MPR121_TOUCHTH_0 + 2*i, touch)
-            self._device.write8(MPR121_RELEASETH_0 + 2*i, release)
+            self._i2c_retry(self._device.write8, MPR121_TOUCHTH_0 + 2*i, touch)
+            self._i2c_retry(self._device.write8, MPR121_RELEASETH_0 + 2*i, release)
 
     def filtered_data(self, pin):
         """Return filtered data register value for the provided pin (0-11).
         Useful for debugging.
         """
         assert pin >= 0 and pin < 12, 'pin must be between 0-11 (inclusive)'
-        return self._device.readU16LE(MPR121_FILTDATA_0L + pin*2)
+        return self._i2c_retry(self._device.readU16LE, MPR121_FILTDATA_0L + pin*2)
 
     def baseline_data(self, pin):
         """Return baseline data register value for the provided pin (0-11).
         Useful for debugging.
         """
         assert pin >= 0 and pin < 12, 'pin must be between 0-11 (inclusive)'
-        bl = self._device.readU8(MPR121_BASELINE_0 + pin)
+        bl = self._i2c_retry(self._device.readU8, MPR121_BASELINE_0 + pin)
         return bl << 2
 
     def touched(self):
         """Return touch state of all pins as a 12-bit value where each bit 
         represents a pin, with a value of 1 being touched and 0 not being touched.
         """
-        t = self._device.readU16LE(MPR121_TOUCHSTATUS_L)
+        t = self._i2c_retry(self._device.readU16LE, MPR121_TOUCHSTATUS_L)
         return t & 0x0FFF
 
     def is_touched(self, pin):
