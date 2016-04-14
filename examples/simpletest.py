@@ -24,7 +24,7 @@ import time
 import Adafruit_MPR121.MPR121 as MPR121
 
 
-print 'Adafruit MPR121 Capacitive Touch Sensor Test'
+print('Adafruit MPR121 Capacitive Touch Sensor Test')
 
 # Create MPR121 instance.
 cap = MPR121.MPR121()
@@ -32,7 +32,7 @@ cap = MPR121.MPR121()
 # Initialize communication with MPR121 using default I2C bus of device, and 
 # default I2C address (0x5A).  On BeagleBone Black will default to I2C bus 0.
 if not cap.begin():
-    print 'Error initializing MPR121.  Check your wiring!'
+    print('Error initializing MPR121.  Check your wiring!')
     sys.exit(1)
 
 # Alternatively, specify a custom I2C address such as 0x5B (ADDR tied to 3.3V),
@@ -43,7 +43,7 @@ if not cap.begin():
 #cap.begin(bus=1)
 
 # Main loop to print a message every time a pin is touched.
-print 'Press Ctrl-C to quit.'
+print('Press Ctrl-C to quit.')
 last_touched = cap.touched()
 while True:
     current_touched = cap.touched()
@@ -54,10 +54,10 @@ while True:
         pin_bit = 1 << i
         # First check if transitioned from not touched to touched.
         if current_touched & pin_bit and not last_touched & pin_bit:
-            print '{0} touched!'.format(i)
+            print('{0} touched!'.format(i))
         # Next check if transitioned from touched to not touched.
         if not current_touched & pin_bit and last_touched & pin_bit:
-            print '{0} released!'.format(i)
+            print('{0} released!'.format(i))
     # Update last state and wait a short period before repeating.
     last_touched = current_touched
     time.sleep(0.1)
@@ -66,12 +66,12 @@ while True:
     # call the is_touched method with a pin number to directly check that pin.
     # This will be a little slower than the above code for checking a lot of pins.
     #if cap.is_touched(0):
-    #    print 'Pin 0 is being touched!'
+    #    print('Pin 0 is being touched!')
     
     # If you're curious or want to see debug info for each pin, uncomment the
     # following lines:
     #print '\t\t\t\t\t\t\t\t\t\t\t\t\t 0x{0:0X}'.format(cap.touched())
     #filtered = [cap.filtered_data(i) for i in range(12)]
-    #print 'Filt:', '\t'.join(map(str, filtered))
+    #print('Filt:', '\t'.join(map(str, filtered)))
     #base = [cap.baseline_data(i) for i in range(12)]
-    #print 'Base:', '\t'.join(map(str, base))
+    #print('Base:', '\t'.join(map(str, base)))

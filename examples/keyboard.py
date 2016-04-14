@@ -74,7 +74,7 @@ import uinput
 
 
 # Define mapping of capacitive touch pin presses to keyboard button presses.
-KEY_MAPPING = { 
+KEY_MAPPING = {
                 0: uinput.KEY_UP,    # Each line here should define a dict entry
                 1: uinput.KEY_DOWN,  # that maps the capacitive touch input number
                 2: uinput.KEY_LEFT,  # to an appropriate key press.
@@ -108,7 +108,7 @@ device = uinput.Device(KEY_MAPPING.values())
 # Setup the MPR121 device.
 cap = MPR121.MPR121()
 if not cap.begin():
-    print 'Failed to initialize MPR121, check your wiring!'
+    print('Failed to initialize MPR121, check your wiring!')
     sys.exit(1)
 
 # Configure GPIO library to listen on IRQ pin for changes.
@@ -123,9 +123,9 @@ atexit.register(GPIO.cleanup)
 cap.touched()
 
 # Event loop to wait for IRQ pin changes and respond to them.
-print 'Press Ctrl-C to quit.'
+print('Press Ctrl-C to quit.')
 while True:
-    # Wait for the IRQ pin to drop or too much time ellapses (to help prevent 
+    # Wait for the IRQ pin to drop or too much time ellapses (to help prevent
     # missing an IRQ event and waiting forever).
     start = time.time()
     while (time.time() - start) < MAX_EVENT_WAIT_SECONDS and not GPIO.event_detected(IRQ_PIN):
