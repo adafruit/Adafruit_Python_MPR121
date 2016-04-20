@@ -43,7 +43,7 @@ if not cap.begin():
 #cap.begin(address=0x5B)
 
 # Also you can specify an optional I2C bus with the bus keyword parameter.
-#cap.begin(bus=1)
+#cap.begin(busnum=1)
 
 pygame.mixer.pre_init(44100, -16, 12, 512)
 pygame.init()
