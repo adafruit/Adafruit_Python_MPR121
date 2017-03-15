@@ -49,21 +49,21 @@ pygame.mixer.pre_init(44100, -16, 12, 512)
 pygame.init()
 
 # Define mapping of capacitive touch pin presses to sound files
-# tons more sounds are available in /opt/sonic-pi/etc/samples/ and
-# /usr/share/scratch/Media/Sounds/
+# tons more sounds are available but because they have changed to .flac in /opt/sonic-pi/etc/samples/ some will not work
+# more .wav files are found in /usr/share/scratch/Media/Sounds/ that work fine this example uses Aniamal sounds.
 SOUND_MAPPING = {
-  0: '/opt/sonic-pi/etc/samples/drum_bass_soft.wav',
-  1: '/opt/sonic-pi/etc/samples/drum_bass_hard.wav',
-  2: '/opt/sonic-pi/etc/samples/drum_snare_soft.wav',
-  3: '/opt/sonic-pi/etc/samples/drum_snare_hard.wav',
-  4: '/opt/sonic-pi/etc/samples/drum_tom_lo_soft.wav',
-  5: '/opt/sonic-pi/etc/samples/drum_tom_mid_hard.wav',
-  6: '/opt/sonic-pi/etc/samples/drum_tom_hi_hard.wav',
-  7: '/opt/sonic-pi/etc/samples/drum_heavy_kick.wav',
-  8: '/opt/sonic-pi/etc/samples/drum_cymbal_open.wav',
-  9: '/opt/sonic-pi/etc/samples/drum_cymbal_hard.wav',
-  10: '/opt/sonic-pi/etc/samples/drum_cymbal_soft.wav',
-  11: '/opt/sonic-pi/etc/samples/perc_bell.wav',
+  0: '/usr/share/scratch/Media/Sounds/Animal/Bird.wav',
+  1: '/usr/share/scratch/Media/Sounds/Animal/Cricket.wav',
+  2: '/usr/share/scratch/Media/Sounds/Animal/Dog1.wav',
+  3: '/usr/share/scratch/Media/Sounds/Animal/Dog2.wav',
+  4: '/usr/share/scratch/Media/Sounds/Animal/Duck.wav',
+  5: '/usr/share/scratch/Media/Sounds/Animal/Goose.wav',
+  6: '/usr/share/scratch/Media/Sounds/Animal/Horse.wav',
+  7: '/usr/share/scratch/Media/Sounds/Animal/Kitten.wav',
+  8: '/usr/share/scratch/Media/Sounds/Animal/Meow.wav',
+  9: '/usr/share/scratch/Media/Sounds/Animal/Owl.wav',
+  10: '/usr/share/scratch/Media/Sounds/Animal/Rooster.wav',
+  11: '/usr/share/scratch/Media/Sounds/Animal/WolfHowl.wav',
 }
 
 sounds = [0,0,0,0,0,0,0,0,0,0,0,0]
